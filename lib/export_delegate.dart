@@ -18,17 +18,17 @@ class ExportDelegate {
     Map<String, String> ttfFonts = const {},
   }) : fontData = FontData(ttfFonts);
 
-  final Map<String, ExportFrame> _registeredFrames = {};
+  final Map<String, ExportFrameContext> _registeredFrames = {};
 
   /// Registers a new [ExportFrame] to the [ExportDelegate].
-  void registerFrame(ExportFrame frame) {
+  void registerFrame(ExportFrameContext frame) {
     _registeredFrames[frame.frameId] = frame;
   }
 
   /// Returns the [ExportFrame] with the given [frameId].
   /// Throws an [Exception] if no [ExportFrame] is found.
-  ExportFrame getFrame(String frameId) {
-    final ExportFrame? frame = _registeredFrames[frameId];
+  ExportFrameContext getFrame(String frameId) {
+    final ExportFrameContext? frame = _registeredFrames[frameId];
 
     if (frame == null) {
       throw Exception('No frame with id $frameId found');
@@ -46,16 +46,12 @@ class ExportDelegate {
   /// Exports the [ExportFrame] with the given [frameId] to a [pw.Document].
   Future<pw.Document> exportToPdfDocument(String frameId,
       {ExportOptions? overrideOptions}) async {
-    final ExportFrame? frame = _registeredFrames[frameId];
-
-    if (frame == null) {
-      throw Exception('No frame with id $frameId found');
-    }
+    final frame = getFrame(frameId);
 
     if (overrideOptions != null) {
       ExportDelegate delegate = copyWith(options: overrideOptions);
       return await delegate._exportDocument(
-          frame.exportWidget, frame.exportContext!);
+          frame.exportWidget, frame.exportContext);
     }
 
     return await _exportDocument(frame.exportWidget, frame.exportContext!);
@@ -64,29 +60,29 @@ class ExportDelegate {
   /// Exports the [ExportFrame] with the given [frameId] to a [pw.Page].
   Future<pw.Page> exportToPdfPage(String frameId,
       {ExportOptions? overrideOptions}) async {
-    final ExportFrame frame = getFrame(frameId);
+    final frame = getFrame(frameId);
 
     if (overrideOptions != null) {
       ExportDelegate delegate = copyWith(options: overrideOptions);
       return await delegate._exportPage(
-          frame.exportWidget, frame.exportContext!);
+          frame.exportWidget, frame.exportContext);
     }
 
-    return await _exportPage(frame.exportWidget, frame.exportContext!);
+    return await _exportPage(frame.exportWidget, frame.exportContext);
   }
 
   /// Exports the [ExportFrame] with the given [frameId] to a [pw.Widget].
   Future<pw.Widget> exportToPdfWidget(String frameId,
       {ExportOptions? overrideOptions}) async {
-    final ExportFrame frame = getFrame(frameId);
+    final frame = getFrame(frameId);
 
     if (overrideOptions != null) {
       ExportDelegate delegate = copyWith(options: overrideOptions);
       return await delegate._exportWidget(
-          frame.exportWidget, frame.exportContext!);
+          frame.exportWidget, frame.exportContext);
     }
 
-    return await _exportWidget(frame.exportWidget, frame.exportContext!);
+    return await _exportWidget(frame.exportWidget, frame.exportContext);
   }
 
   /// Exports the given [widget] to a [pw.Widget].

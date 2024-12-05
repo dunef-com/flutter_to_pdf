@@ -15,16 +15,25 @@ class ExportFrame extends StatelessWidget {
     super.key,
   });
 
-  static BuildContext? _exportContext;
-
-  BuildContext? get exportContext => _exportContext;
-
-  Widget get exportWidget => child;
-
   @override
   Widget build(BuildContext context) {
-    _exportContext = context;
-    exportDelegate.registerFrame(this);
+    exportDelegate.registerFrame(ExportFrameContext(
+        frameId: frameId,
+        exportWidget: child,
+        exportContext: context
+    ));
     return child;
   }
+}
+
+class ExportFrameContext {
+  final String frameId;
+  final Widget exportWidget;
+  final BuildContext exportContext;
+
+  ExportFrameContext({
+    required this.frameId,
+    required this.exportWidget,
+    required this.exportContext
+  });
 }
